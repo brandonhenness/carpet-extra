@@ -12,8 +12,8 @@ import net.minecraft.test.TestContext;
 import net.minecraft.test.TestData;
 import net.minecraft.test.TestEnvironmentDefinition;
 import net.minecraft.test.TestInstance;
-import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockRotation;
 
 // slightly extended TestData
 public record DynamicTest(
@@ -28,11 +28,12 @@ public record DynamicTest(
         int maxAttempts,
         int requiredSuccesses,
         boolean skyAccess,
-        Consumer<TestContext> testFunction
+        Consumer<TestContext> testFunction,
+        int padding
     ) {
     
     public DynamicTest(String environment, String name, String structure, int maxTicks, int setupTicks, boolean required, BlockRotation rotation, Consumer<TestContext> runner) {
-        this(environment, name, structure, maxTicks, setupTicks, required, rotation, false, 1, 1, false, runner);
+        this(environment, name, structure, maxTicks, setupTicks, required, rotation, false, 1, 1, false, runner, 0);
     }
 
     public DynamicTest(String environment, String name, String structure, int maxTicks, int setupTicks, boolean required, Consumer<TestContext> runner) {
@@ -40,16 +41,16 @@ public record DynamicTest(
     }
 
     // adapted from TestAnnotationLocator.TestMethod
-    public TestInstance testInstance(Registry<TestEnvironmentDefinition> envRegistry) {
+    public TestInstance testInstance(Registry<TestEnvironmentDefinition<?>> envRegistry) {
         return new FunctionTestInstance(
                 RegistryKey.of(RegistryKeys.TEST_FUNCTION, identifier()),
                 testData(envRegistry)
         );
     }
     
-    TestData<RegistryEntry<TestEnvironmentDefinition>> testData(Registry<TestEnvironmentDefinition> testEnvironmentDefinitionRegistry) {
+    TestData<RegistryEntry<TestEnvironmentDefinition<?>>> testData(Registry<TestEnvironmentDefinition<?>> testEnvironmentDefinitionRegistry) {
         DynamicTest gameTest = this;
-        RegistryEntry<TestEnvironmentDefinition> testEnvironment = testEnvironmentDefinitionRegistry.getOrThrow(RegistryKey.of(RegistryKeys.TEST_ENVIRONMENT, Identifier.of(gameTest.environment())));
+        RegistryEntry<TestEnvironmentDefinition<?>> testEnvironment = testEnvironmentDefinitionRegistry.getOrThrow(RegistryKey.of(RegistryKeys.TEST_ENVIRONMENT, Identifier.of(gameTest.environment())));
         
         return new TestData<>(
                 testEnvironment,
@@ -61,7 +62,8 @@ public record DynamicTest(
                 gameTest.manualOnly(),
                 gameTest.maxAttempts(),
                 gameTest.requiredSuccesses(),
-                gameTest.skyAccess()
+                gameTest.skyAccess(),
+                gameTest.padding()
         );
     }
     

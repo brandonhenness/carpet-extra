@@ -5,6 +5,7 @@ import java.util.List;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.FallibleItemDispenserBehavior;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EntityTypes;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
@@ -30,11 +31,11 @@ public class FillMinecartDispenserBehavior extends FallibleItemDispenserBehavior
         Box frontBlockBox = new Box(frontBlockPos);
 
         // get non-mounted minecarts in front of dispenser
-        List<MinecartEntity> minecarts = world.getEntitiesByType(EntityType.MINECART, frontBlockBox, EntityPredicates.NOT_MOUNTED);
+        List<MinecartEntity> minecarts = world.getEntitiesByType(EntityTypes.MINECART, frontBlockBox, EntityPredicates.NOT_MOUNTED);
 
         if(!minecarts.isEmpty()) {
             // choose a random minecart in front of dispenser to fill
-            MinecartEntity oldMinecart = minecarts.get(world.random.nextInt(minecarts.size()));
+            MinecartEntity oldMinecart = minecarts.get(world.getRandom().nextInt(minecarts.size()));
             AbstractMinecartEntity newMinecart = AbstractMinecartEntity.create(world, oldMinecart.getX(), oldMinecart.getY(), oldMinecart.getZ(), this.MINECART_TYPE, SpawnReason.DISPENSER, ItemStack.EMPTY, null);
 
             // Copy data from original minecart to new minecart

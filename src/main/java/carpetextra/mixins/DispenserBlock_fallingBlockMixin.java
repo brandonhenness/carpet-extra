@@ -5,7 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DispenserBlock;
-import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EntityTypes;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
@@ -27,7 +27,7 @@ public class DispenserBlock_fallingBlockMixin {
     private static final Vec3d INITIAL_VELOCITY = new Vec3d(0.0, 0.1, 0.0);
 
     private void createFallingBlockWithVelocity(World world, BlockPos pos, BlockState state, Vec3d velocity) {
-        FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(EntityType.FALLING_BLOCK, world);
+        FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(EntityTypes.FALLING_BLOCK, world);
         FallingBlockEntityAccessor fallingBlockAccessor = (FallingBlockEntityAccessor)fallingBlockEntity;
         fallingBlockAccessor.setBlockState(state.contains(Properties.WATERLOGGED) ? state.with(Properties.WATERLOGGED, false) : state);
         fallingBlockEntity.intersectionChecked = true;
@@ -52,8 +52,8 @@ public class DispenserBlock_fallingBlockMixin {
             Direction direction = state.get(DispenserBlock.FACING);
             BlockPos facingPos = pos.offset(direction);
             BlockState facingState = world.getBlockState(facingPos);
-            if (!facingState.isAir() && (!facingState.isOf(Blocks.WATER) && !facingState.isOf(Blocks.LAVA) || facingState.getFluidState().isStill())) {
-                Vec3d velocity = (state.isOf(Blocks.DROPPER) ? INITIAL_VELOCITY : INITIAL_VELOCITY.add(Vec3d.of((direction).getVector())));
+            if (!facingState.isAir() && (!facingState.is(Blocks.WATER) && !facingState.is(Blocks.LAVA) || facingState.getFluidState().isStill())) {
+                Vec3d velocity = (state.is(Blocks.DROPPER) ? INITIAL_VELOCITY : INITIAL_VELOCITY.add(Vec3d.of((direction).getVector())));
                 createFallingBlockWithVelocity(world, facingPos, facingState, velocity);
                 ci.cancel();
             }
